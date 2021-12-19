@@ -17,11 +17,12 @@ echo "Starting bootstrapping"
 # Update apt
 sudo apt update
 
-# I'm leaning toward using snap packages when able,
-# but some packages still focus toward apt releases or
-# do not exist in snap at all.
+# I'm leaning toward using ap packages when able,
+# but some packages focus toward snap releases or
+# do not exist in apt at all.
 APT_PACKAGES=(
     audacity
+    curl
     evolution
     git
     jq
@@ -36,8 +37,6 @@ sudo apt install ${APT_PACKAGES[@]}
 
 SNAP_PACKAGES=(
     bitwarden
-    code
-    curl
     spotify
     telegram-desktop
     zoom-client
@@ -49,12 +48,42 @@ SNAP_PACKAGES=(
 echo "Installing snap packages..."
 snap install ${SNAP_PACKAGES[@]}
 
+echo "Installing classic snaps..."
+CLASSIC_SNAP_PACKAGES=(
+    code
+    intellij-idea-community
+)
+for snap in "${CLASSIC_SNAP_PACKAGES[@]}"
+do
+    snap install $snap --classic
+done
+
 echo "Configuring Firefox..."
 ./firefox/set-up-firefox-profile.sh benjamin
 
 # https://ohmyz.sh/#install
 echo "Installing oh-my-zsh..."
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+echo "Downloading repositories..."
+[[ ! -d ~/Source ]] && mkdir ~/Source
+REPOSITORIES=(
+    sfotm/dotfiles
+    sfotm/sfotm.github.io
+)
+for repo in "${REPOSITORIES[@]}"
+do
+    mkdir -p ~/Source/$repo
+    git clone https://github.com/$repo.git ~/Source/$(basename $repo)
+done
+
+# Apply dotfiles
+## Delete the default ~/.zshrc that oh-my-zsh creates before applying dotfiles
+rm ~/.zshrc
+~/Source/dotfiles/install
+
+# Ensure that dotfiles take effect
+source ~/.zshrc
 
 # https://github.com/pyenv/pyenv-installer
 echo "Installing and configuring pyenv..."
@@ -70,24 +99,5 @@ rbenv global 2.7.4
 echo "Installing and configuring nvm..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 nvm install node
-
-echo "Downloading repositories..."
-[[ ! -d ~/Source ]] && mkdir ~/Source
-REPOSITORIES=(
-    sfotm/dotfiles
-    sfotm/sfotm.github.io
-)
-for repo in "${REPOSITORIES[@]}"
-do
-    mkdir -p ~/Source/$repo
-    git clone git@github.com:$repo ~/Source/$repo
-done
-
-echo "Configuring dotfiles..."
-# oh-my-zsh likes including a default .zshrc that
-# makes the dotfiles install panic
-rm ~/.zshrc
-~/Source/sfotm/dotfiles/install
-source ~/.zshrc
 
 echo "Bootstrapping complete"

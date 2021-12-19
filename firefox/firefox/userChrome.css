@@ -1,0 +1,13 @@
+/* hide the native tabs */
+#TabsToolbar {
+	visibility: collapse
+}
+
+/* hide the title bar as well (also hides window buttons) */
+#titlebar {
+	visibility: collapse;
+}
+
+#sidebar-header {
+	visibility: collapse !important
+}
