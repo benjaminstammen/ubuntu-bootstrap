@@ -22,8 +22,10 @@ sudo apt update
 # do not exist in apt at all.
 APT_PACKAGES=(
     audacity
+    build-essential
     curl
     evolution
+    gcc
     git
     jq
     neovim
