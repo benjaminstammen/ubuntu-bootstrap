@@ -37,29 +37,6 @@ APT_PACKAGES=(
 echo "Installing apt packages..."
 sudo apt install ${APT_PACKAGES[@]}
 
-SNAP_PACKAGES=(
-    bitwarden
-    spotify
-    telegram-desktop
-    zoom-client
-)
-
-# TODO: some of these might need a classic install
-# NOTE: this appears to not be idempotent - this is an
-#    issue with the snap binary: https://tinyurl.com/nr4m9kpf
-echo "Installing snap packages..."
-snap install ${SNAP_PACKAGES[@]}
-
-echo "Installing classic snaps..."
-CLASSIC_SNAP_PACKAGES=(
-    code
-    intellij-idea-community
-)
-for snap in "${CLASSIC_SNAP_PACKAGES[@]}"
-do
-    snap install $snap --classic
-done
-
 echo "Configuring Firefox..."
 ./firefox/set-up-firefox-profile.sh benjamin
 
